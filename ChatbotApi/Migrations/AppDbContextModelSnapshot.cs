@@ -22,7 +22,7 @@ namespace ChatbotApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ChatbotApi.Models.Bot", b =>
+            modelBuilder.Entity("ChatbotApi.Models.Requests", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,7 +43,7 @@ namespace ChatbotApi.Migrations
                     b.ToTable("Bots");
                 });
 
-            modelBuilder.Entity("ChatbotApi.Models.Message", b =>
+            modelBuilder.Entity("ChatbotApi.Models.Responses", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -72,18 +72,18 @@ namespace ChatbotApi.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("ChatbotApi.Models.Message", b =>
+            modelBuilder.Entity("ChatbotApi.Models.Responses", b =>
                 {
-                    b.HasOne("ChatbotApi.Models.Bot", "Bot")
+                    b.HasOne("ChatbotApi.Models.Requests", "Requests")
                         .WithMany("Messages")
                         .HasForeignKey("BotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Bot");
+                    b.Navigation("Requests");
                 });
 
-            modelBuilder.Entity("ChatbotApi.Models.Bot", b =>
+            modelBuilder.Entity("ChatbotApi.Models.Requests", b =>
                 {
                     b.Navigation("Messages");
                 });

@@ -1,8 +1,8 @@
 using ChatbotApi.Data;
 using ChatbotApi.Hubs;
 using ChatbotApi.Services;
+using ChatbotApi.Util;
 using Microsoft.EntityFrameworkCore;
-using OpenAI.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(op =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
-        bd => bd.WithOrigins("http://localhost:3000")
+        bd => bd.WithOrigins("http://localhost:5173")
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials());
@@ -25,7 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<OpenAiService>();
+builder.Services.AddScoped<IGeminiService, GeminiService>();
 
 var app = builder.Build();
 

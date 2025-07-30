@@ -479,3 +479,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Chaves de acesso Google Cloud
+./daring-tracer-445222-p0-3e6b78547a49.json

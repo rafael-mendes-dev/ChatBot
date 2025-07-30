@@ -1,21 +1,14 @@
 ﻿using ChatbotApi.Data;
 using ChatbotApi.Models;
 using ChatbotApi.Services;
+using ChatbotApi.Util;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotApi.Hubs;
 
-public class ChatHub : Hub // SignalR Hub para comunicação em tempo real com os clientes
+public class ChatHub(IGeminiService geminiService, AppDbContext context) : Hub // SignalR Hub para comunicação em tempo real com os clientes
 {
-    private readonly OpenAiService _openAiService;
-    private readonly AppDbContext _context;
-
-    public ChatHub(OpenAiService openAiService, AppDbContext context)
-    {
-        _openAiService = openAiService;
-        _context = context;
-    }
     
     // Metodo que o cliente chama para enviar uma mensagem
     public async Task SendMessageToBot(int botId, string userMessage)
@@ -23,12 +16,12 @@ public class ChatHub : Hub // SignalR Hub para comunicação em tempo real com o
         if (string.IsNullOrWhiteSpace(userMessage))
             await Clients.Caller.SendAsync("ReceiveMessage", new { error = "A mensagem não pode ser vazia."});
         
-        var bot = await _context.Bots.FindAsync(botId);
+        var bot = await context.Bots.FindAsync(botId);
         if (bot == null)
-            await Clients.Caller.SendAsync("ReceiveMessage", new { error = "Bot não encontrado." });
+            await Clients.Caller.SendAsync("ReceiveMessage", new { error = "Requests não encontrado." });
         
         // Recupera o histórico de mensagens do bot
-        var chatHistory = await _context.Messages
+        var chatHistory = await context.Messages
             .Where(m => m.BotId == botId)
             .OrderByDescending(m => m.Timestamp)
             .Take(10) // Limite para as últimas 10 mensagens
@@ -39,7 +32,7 @@ public class ChatHub : Hub // SignalR Hub para comunicação em tempo real com o
         {
             // Obtem a resposta do bot
             var botResponseContent =
-                await _openAiService.GetChatbotResponseAsync(bot!.Context, chatHistory, userMessage);
+                await geminiService.GetChatbotResponseAsync(bot!.Context, chatHistory, userMessage);
 
             var newMessage = new Message
             {
@@ -49,8 +42,8 @@ public class ChatHub : Hub // SignalR Hub para comunicação em tempo real com o
                 Timestamp = DateTime.UtcNow
             };
             
-            _context.Messages.Add(newMessage);
-            await _context.SaveChangesAsync();
+            context.Messages.Add(newMessage);
+            await context.SaveChangesAsync();
             
             // Envia a mensagem completa (com a resposta do bot) de volta para o cliente que a enviou
             await Clients.Caller.SendAsync("ReceiveMessage", new
@@ -76,7 +69,7 @@ public class ChatHub : Hub // SignalR Hub para comunicação em tempo real com o
     // Método que o cliente chama para obter o histórico de mensagens do bot
     public async Task GetBotHistory(int botId)
     {
-        var messages = await _context.Messages
+        var messages = await context.Messages
             .Where(m => m.BotId == botId)
             .OrderBy(m => m.Timestamp)
             .ToListAsync();

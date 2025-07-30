@@ -26,13 +26,13 @@ export const getBotByIdAsync = async (id: number): Promise<Bot> => {
 };
 
 export const getBotMessagesAsync = async (botId: number): Promise<Message[]> => {
-    const response = await api.get<Message[]>(`/bots/${botId}/messages`);
+    const response = await api.get<Message[]>(`/bots/messages/${botId}`);
     return response.data;
 };
 
 export const sendMessageRestAsync = async (botId: number, userMessage: string): Promise<Message> => {
     const request: MessageRequest = { userMessage };
-    const response = await api.post<Message>(`/bots/${botId}/messages`, request);
+    const response = await api.post<Message>(`/bots/messages/${botId}`, request);
     return response.data;
 };
 

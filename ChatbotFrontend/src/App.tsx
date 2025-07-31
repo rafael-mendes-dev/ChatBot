@@ -4,6 +4,7 @@ import BotList from './pages/botList';
 import ChatWindow from './pages/chatWindow';
 import AlertContainer, { type AlertMessage } from './components/AlertContainer'; // Importa o AlertContainer
 import './index.css';
+import Sidebar from './components/Sidebar/Sidebar';
 
 function App() {
   const [alerts, setAlerts] = useState<AlertMessage[]>([]);
@@ -11,7 +12,7 @@ function App() {
   // Função para adicionar um novo alerta
   const addAlert = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const newAlert: AlertMessage = {
-      id: Math.random().toString(36).substring(2, 9), // ID único simples
+      id: Math.random().toString(36).substring(2, 9), 
       message,
       type,
     };
@@ -25,29 +26,17 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100 flex flex-col">
-        <nav className="bg-gradient-to-r from-blue-600 to-purple-700 p-4 shadow-md">
-          <ul className="flex justify-end space-x-6 mr-4">
-            <li>
-              <Link to="/bots" className="text-white hover:text-blue-200 font-semibold text-lg transition duration-200">
-                Meus Bots
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        <main className="flex-grow p-4">
-          <Routes>
-            {/* Passamos a função addAlert como prop para os componentes que precisam dela */}
-            <Route path="/" element={<BotList addAlert={addAlert} />} />
-            <Route path="/bots" element={<BotList addAlert={addAlert} />} />
-            <Route path="/chat/:botId" element={<ChatWindow />} />
+      <Sidebar />
+      <main className="flex-grow p-4">
+        <Routes>
+          <Route path="/" element={<BotList addAlert={addAlert} />} />
+          <Route path="/bots" element={<BotList addAlert={addAlert} />} />
+          <Route path="/chat/:botId" element={<ChatWindow />} />
           </Routes>
         </main>
 
         {/* Renderiza o AlertContainer no final do App.tsx */}
         <AlertContainer alerts={alerts} removeAlert={removeAlert} />
-      </div>
     </Router>
   );
 }

@@ -1,7 +1,6 @@
-﻿// src/components/CreateBotForm.tsx
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { createBotAsync } from '../services/api';
-// Não precisamos mais importar SuccessAlert aqui, pois ele será gerenciado pelo App.tsx
+
 
 interface CreateBotFormProps {
   onClose: () => void;

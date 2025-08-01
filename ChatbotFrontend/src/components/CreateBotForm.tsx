@@ -5,12 +5,18 @@ import { createBotAsync } from '../services/api';
 interface CreateBotFormProps {
   onClose: () => void;
   onBotCreated: () => void;
-  onSuccessAlert: (message: string) => void; // NOVA PROP AQUI!
+  onSuccessAlert: (message: string) => void;
 }
 
 const CreateBotForm: React.FC<CreateBotFormProps> = ({ onClose, onBotCreated, onSuccessAlert }) => {
   const [name, setName] = useState<string>('');
   const [context, setContext] = useState<string>('');
+
+  // Função para limpar o formulário
+  const clearForm = () => {
+    setName('');
+    setContext('');
+  };
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,6 +27,7 @@ const CreateBotForm: React.FC<CreateBotFormProps> = ({ onClose, onBotCreated, on
 
     try {
       await createBotAsync(name, context);
+      clearForm(); // Limpa o formulário
       onBotCreated(); // Recarrega a lista de bots
       onClose();      // Fecha o modal imediatamente
       onSuccessAlert('Bot criado com sucesso!'); // Chama a função para exibir o alerta global
@@ -52,7 +59,7 @@ const CreateBotForm: React.FC<CreateBotFormProps> = ({ onClose, onBotCreated, on
               placeholder="Ex: Assistente de Vendas"
               required
               disabled={loading}
-              className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
+              className="w-full px-3 py-2 bg-[#3d4043] text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
             />
           </div>
           <div className="mb-6">
@@ -67,13 +74,13 @@ const CreateBotForm: React.FC<CreateBotFormProps> = ({ onClose, onBotCreated, on
               rows={5}
               required
               disabled={loading}
-              className="w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y placeholder-gray-400"
+              className="w-full px-3 py-2 bg-[#3d4043] text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y placeholder-gray-400"
             ></textarea>
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200"
+            className="w-full bg-green-600 hover:scale-105 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200"
           >
             Criar Bot
           </button>

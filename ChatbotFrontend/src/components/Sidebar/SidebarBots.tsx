@@ -1,4 +1,4 @@
-import { getBotsAsync, getBotMessagesAsync } from "../../services/api";
+import { getBotsAsync } from "../../services/api";
 import type { Bot as BotType } from "../../services/types";
 import { Bot } from 'lucide-react';
 import { useEffect, useState } from "react";
@@ -7,42 +7,22 @@ import LoadingSpinner from "../LoadingSpinner";
 const SidebarBots = ({ isOpen }: { isOpen: boolean }) => {
     const [bots, setBots] = useState<BotType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
 
     const fetchBots = async () => {
         setLoading(true);
-        setError(null);
         try {
         const data = await getBotsAsync();
         setBots(data);
         } catch (err: any) {
         console.error('Erro ao buscar bots:', err);
-        setError(err.response?.data?.message || 'Erro ao carregar a lista de bots. Verifique sua conexão.');
         } finally {
         setLoading(false);
-        }
-    };
-
-    const fetchBotMessages = async (botId: number) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const messages = await getBotMessagesAsync(botId);
-        } catch (err: any) {
-            console.error('Erro ao buscar mensagens do bot:', err);
-            setError(err.response?.data?.message || 'Erro ao carregar as mensagens do bot. Verifique sua conexão.');
-        } finally {
-            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchBots();
     }, []);
-
-    const handleBotCreated = () => {
-        fetchBots(); // Recarrega a lista de bots após um novo ser criado
-    };
 
     if (loading) {
     return (
@@ -52,7 +32,7 @@ const SidebarBots = ({ isOpen }: { isOpen: boolean }) => {
 
     return (
         <div className="flex flex-col">
-            {bots.map((bot) => (
+            {bots.slice(0, 8).map((bot) => (
                 <div 
                     key={bot.id} 
                     className="flex items-center justify-start gap-[10px] p-[10px] rounded-full text-[#d3d8d4] cursor-pointer hover:bg-[#323537] transition-colors duration-200" 

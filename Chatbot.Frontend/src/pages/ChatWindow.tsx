@@ -172,22 +172,22 @@ function chatWindow() {
   };
 
   return (
-    <div className="flex-1 bg-[#1e2020] flex flex-col overflow-hidden h-screen">
-      <div className="flex items-center justify-between text-2xl text-gray-400 px-8 pt-8 pb-4 min-h-[64px]">
-        <p className="font-bold text-gray-400 truncate max-w-[80vw]">{botName}</p>
+    <div className="flex-1 bg-base-100 flex flex-col overflow-hidden h-screen">
+      <div className="flex items-center justify-between text-2xl text-base-content/60 px-8 pt-8 pb-4 min-h-[64px]">
+        <p className="font-bold text-base-content/60 truncate max-w-[80vw]">{botName}</p>
         <CircleUserRound className="cursor-pointer hover:scale-115" />
       </div>
       <div className="max-w-4xl m-auto w-full flex flex-col font-normal px-8 pb-8 pt-2 h-[calc(100vh-80px)]">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#323537] scrollbar-track-[#232425] scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-neutral scrollbar-track-base-200 scroll-smooth">
           {/* Renderiza mensagens individuais */}
           {messages.map((message) => {
             if (message.isUser) {
               return (
                 <div key={message.id} className="w-full mb-6">
                   <div className="flex justify-end">
-                    <div className="max-w-xl w-fit p-4 rounded-2xl shadow-md bg-[#333537] text-white font-medium relative">
+                    <div className="max-w-xl w-fit p-4 rounded-2xl shadow-md bg-neutral text-base-content font-medium relative">
                       <p className="text-base">{message.userMessage}</p>
-                      <span className="absolute bottom-1 right-2 text-xs text-gray-400">
+                      <span className="absolute bottom-1 right-2 text-xs text-base-content/40">
                         {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -195,10 +195,10 @@ function chatWindow() {
                   {/* Verifica se deve mostrar o loading spinner */}
                   {message.isSending && (
                     <div className="w-full flex flex-col items-stretch mt-2">
-                      <hr className="border-gray-700 mb-2" />
+                      <hr className="border-base-content/20 mb-2" />
                       <div className="w-full flex items-start gap-2 relative">
                         <div className="min-w-[28px] flex flex-col items-center justify-start h-full">
-                          <span className="mt-1 text-blue-500"><BotMessageSquare size={22} /></span>
+                          <span className="mt-1 text-primary"><BotMessageSquare size={22} /></span>
                         </div>
                         <div className="flex-1 flex items-center">
                           <LoadingSpinner />
@@ -212,16 +212,16 @@ function chatWindow() {
               return (
                 <div key={message.id} className="w-full mb-6">
                   <div className="w-full flex flex-col items-stretch">
-                    <hr className="border-gray-700 mb-2" />
+                    <hr className="border-base-content/20 mb-2" />
                     <div className="w-full flex items-start gap-2 relative">
                       <div className="min-w-[28px] flex flex-col items-center justify-between h-full">
-                        <span className="mt-1 text-blue-500"><BotMessageSquare size={22} /></span>
-                        <span className="w-full text-left text-xs text-gray-400 mt-2">
+                        <span className="mt-1 text-primary"><BotMessageSquare size={22} /></span>
+                        <span className="w-full text-left text-xs text-base-content/40 mt-2">
                           {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       <div className="flex-1">
-                        <p className="text-base text-gray-200" style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: marked.parse(message.botResponse) }} />
+                        <p className="text-base text-base-content/80" style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: marked.parse(message.botResponse) }} />
                       </div>
                     </div>
                   </div>
@@ -239,16 +239,16 @@ function chatWindow() {
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Digite sua mensagem..."
               disabled={connectionStatus !== 'Conectado'}
-              className="w-full pr-10 pl-4 py-2 bg-transparent text-white border border-gray-700/50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+              className="w-full pr-10 pl-4 py-2 bg-transparent text-base-content border border-base-content/20 rounded-full focus:outline-none focus:ring-2 focus:ring-primary placeholder-base-content/40"
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 pointer-events-none">
               <CornerDownRight size={22} />
             </span>
           </div>
           <button
             type="submit"
             disabled={connectionStatus !== 'Conectado' || !newMessage.trim()}
-            className="ml-2 bg-gradient-to-r from-blue-500 to-violet-600 hover:scale-105 text-white font-bold py-2 px-3 rounded-full transition duration-200 text-sm"
+            className="ml-2 bg-gradient-to-r from-primary to-secondary hover:scale-105 text-primary-content font-bold py-2 px-3 rounded-full transition duration-200 text-sm"
           >
             Enviar
           </button>

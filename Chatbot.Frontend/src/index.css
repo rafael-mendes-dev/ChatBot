@@ -1,10 +1,282 @@
 @import "tailwindcss";
-@plugin "daisyui";
+
+/* Definindo variáveis CSS personalizadas para o tema */
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #8b5cf6;
+  --color-accent: #06b6d4;
+  --color-neutral: #333537;
+  --color-base-100: #1e2020;
+  --color-base-200: #232425;
+  --color-base-300: #282a2c;
+  --color-base-content: #ffffff;
+  --color-neutral-content: #d3d8d4;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+}
+
+/* Tema claro - alternativo */
+:root[data-theme="light"] {
+  --color-primary: #2563eb; /* blue-600 - mais escuro para contraste */
+  --color-secondary: #7c3aed; /* violet-600 - mais escuro para contraste */
+  --color-accent: #0891b2; /* cyan-600 */
+  --color-neutral: #e5e7eb; /* gray-200 - fundo neutro claro */
+  --color-base-100: #ffffff; /* Fundo principal branco */
+  --color-base-200: #f9fafb; /* gray-50 - fundo secundário */
+  --color-base-300: #f3f4f6; /* gray-100 - sidebar/modal */
+  --color-base-content: #111827; /* gray-900 - texto principal escuro */
+  --color-neutral-content: #4b5563; /* gray-600 - texto secundário */
+  --color-success: #059669; /* green-600 */
+  --color-error: #dc2626; /* red-600 */
+  --color-warning: #d97706; /* amber-600 */
+  --color-info: #2563eb; /* blue-600 */
+}
+
+/* Aplicando o tema dark por padrão */
+html, body {
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
+  min-height: 100vh;
+}
 
 #root{
   font-family: "Rubik", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  background-color: #1e2020;
+  min-height: 100vh;
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
 }
+
+/* Classes customizadas usando as variáveis */
+.bg-base-100 { background-color: var(--color-base-100); }
+.bg-base-200 { background-color: var(--color-base-200); }
+.bg-base-300 { background-color: var(--color-base-300); }
+.bg-neutral { background-color: var(--color-neutral); }
+.text-base-content { color: var(--color-base-content); }
+.text-base-content\/60 { color: rgba(255, 255, 255, 0.6); }
+.text-base-content\/50 { color: rgba(255, 255, 255, 0.5); }
+.text-base-content\/40 { color: rgba(255, 255, 255, 0.4); }
+.text-base-content\/20 { color: rgba(255, 255, 255, 0.2); }
+.text-neutral-content { color: var(--color-neutral-content); }
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+.text-error { color: var(--color-error); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.border-base-content\/20 { border-color: rgba(255, 255, 255, 0.2); }
+.focus\:ring-primary:focus { --tw-ring-color: var(--color-primary); }
+.focus\:border-primary:focus { border-color: var(--color-primary); }
+.hover\:bg-neutral:hover { background-color: var(--color-neutral); }
+.hover\:bg-neutral\/80:hover { background-color: rgba(51, 53, 55, 0.8); }
+.from-primary { --tw-gradient-from: var(--color-primary); }
+.to-secondary { --tw-gradient-to: var(--color-secondary); }
+
+/* Classes para botões primários */
+.bg-primary { background-color: var(--color-primary); }
+.text-primary-content { color: #ffffff; }
+.hover\:bg-primary\/90:hover { background-color: rgba(59, 130, 246, 0.9); }
+
+/* Tema claro - ajustes para botões primários */
+:root[data-theme="light"] .hover\:bg-primary\/90:hover { 
+  background-color: rgba(37, 99, 235, 0.9); 
+}
+
+/* Classes específicas para tema claro */
+:root[data-theme="light"] .text-base-content\/60 { color: rgba(17, 24, 39, 0.6); }
+:root[data-theme="light"] .text-base-content\/50 { color: rgba(17, 24, 39, 0.5); }
+:root[data-theme="light"] .text-base-content\/40 { color: rgba(17, 24, 39, 0.4); }
+:root[data-theme="light"] .text-base-content\/20 { color: rgba(17, 24, 39, 0.2); }
+:root[data-theme="light"] .border-base-content\/20 { border-color: rgba(17, 24, 39, 0.2); }
+:root[data-theme="light"] .hover\:bg-neutral:hover { background-color: #e5e7eb; }
+:root[data-theme="light"] .hover\:bg-neutral\/80:hover { background-color: rgba(229, 231, 235, 0.8); }
+
+/* Animações personalizadas para a sidebar */
+.sidebar-text-enter {
+  animation: slideInFromLeft 0.3s ease-out forwards;
+}
+
+.sidebar-text-exit {
+  animation: slideOutToLeft 0.3s ease-in forwards;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+    max-width: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    max-width: 200px;
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+    max-width: 200px;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-16px);
+    max-width: 0;
+  }
+}
+
+/* Suavização de transições globais */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estilos para o toggle switch */
+.toggle {
+  appearance: none;
+  width: 3rem;
+  height: 1.5rem;
+  background-color: var(--color-base-200);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.5rem;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle:before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: var(--color-base-content);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.toggle:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.toggle:checked:before {
+  transform: translateX(1.5rem);
+}
+
+/* Tema claro - ajustes para o toggle */
+:root[data-theme="light"] .toggle {
+  border-color: rgba(17, 24, 39, 0.2);
+}
+
+:root[data-theme="light"] .toggle:before {
+  background-color: var(--color-base-content);
+}
+
+/* Estilos para Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  color-scheme: normal;
+}
+
+.modal::backdrop {
+  display: none;
+}
+
+.modal-box {
+  background-color: var(--color-base-300);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  max-width: 32rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0;
+}
+
+/* Tema claro - ajustes para modal */
+:root[data-theme="light"] .modal-box {
+  border-color: rgba(17, 24, 39, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Classes para botões do modal */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.btn-circle {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-base-content);
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-neutral);
+}
+
+/* Função JavaScript para alternar temas (adicionar ao componente React):
+  
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    const currentTheme = root.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? null : 'light';
+    
+    if (newTheme) {
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    } else {
+      root.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+    }
+  };
+
+  // Para aplicar o tema salvo ao carregar a página:
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  }, []);
+
+*/

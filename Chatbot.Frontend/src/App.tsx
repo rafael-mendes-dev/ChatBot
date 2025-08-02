@@ -27,7 +27,7 @@ function App() {
 
   return (
     <Router>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-base-100 text-base-content">
         <Sidebar addAlert={addAlert} />
         <Routes>
           <Route path="/" element={<Main />} />

@@ -8,7 +8,7 @@ import DeleteBotForm from "../components/Forms/DeleteBotForm";
 import Modal from "../components/Modal";
 
 const PageHeader = () => (
-    <div className="flex items-center justify-between text-2xl text-gray-400 p-[20px]">
+    <div className="flex items-center justify-between text-2xl text-base-content/60 p-[20px]">
         <p>Chatbot</p>
         <CircleUserRound className="cursor-pointer hover:scale-115" />
     </div>
@@ -69,41 +69,41 @@ const BotListPage = () => {
     }, [menuOpenId]);
 
     return (
-        <div className="flex-1 min-h-screen position-relative overflow-hidden">
+        <div className="flex-1 min-h-screen bg-base-100 overflow-hidden">
             <PageHeader />
             <div className="max-w-3xl m-auto p-[20px] flex flex-col h-[calc(100vh-80px)]">
                 <input
                     type="text"
-                    className="w-full mb-6 px-4 py-2 rounded-lg border border-gray-700 bg-[#232425] text-gray-200 focus:outline-none focus:border-blue-500"
+                    className="w-full mb-6 px-4 py-2 rounded-lg border border-base-content/20 bg-base-200 text-base-content focus:outline-none focus:border-primary"
                     placeholder="Pesquisar bots..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
                 <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#323537] scrollbar-track-[#232425]">
                     {loading ? (
-                        <div className="text-center text-gray-400">Carregando...</div>
+                        <div className="text-center text-base-content/60">Carregando...</div>
                     ) : (
                         <ul className="divide-y divide-gray-700">
                             {filteredBots.length === 0 ? (
-                                <li className="py-6 text-center text-gray-500">Nenhum bot encontrado.</li>
+                                <li className="py-6 text-center text-base-content/40">Nenhum bot encontrado.</li>
                             ) : (
                                 filteredBots.map(bot => {
                                     const isMenuOpen = menuOpenId === bot.id;
                                     return (
                                         <li
                                             key={bot.id}
-                                            className="py-4 flex items-center gap-4 group relative rounded-lg transition-colors duration-200 hover:bg-[#232425]"
+                                            className="py-4 flex items-center gap-4 group relative rounded-lg transition-colors duration-200 hover:bg-base-200"
                                         >
                                             <div
                                                 className="flex-1 flex items-center gap-4 cursor-pointer"
                                                 onClick={() => navigate(`/chat/${bot.id}`)}
                                             >
-                                                <div className="w-10 h-10 rounded-full bg-[#323537] flex items-center justify-center text-blue-400">
+                                                <div className="w-10 h-10 rounded-full bg-neutral flex items-center justify-center text-primary">
                                                     {bot.name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-lg text-gray-200 font-medium">{bot.name}</p>
-                                                    <p className="text-sm text-gray-500 mt-1">{bot.context || "Sem contexto"}</p>
+                                                    <p className="text-lg text-base-content font-medium">{bot.name}</p>
+                                                    <p className="text-sm text-base-content/50 mt-1">{bot.context || "Sem contexto"}</p>
                                                 </div>
                                             </div>
                                             <span
@@ -117,9 +117,9 @@ const BotListPage = () => {
                                                 <Ellipsis />
                                             </span>
                                             {isMenuOpen && (
-                                                <div id="botlist-ellipsis-menu" className="absolute right-0 top-full mt-2 w-32 bg-[#1e2020] border border-gray-700 rounded-lg shadow-lg z-20 flex flex-col">
+                                                <div id="botlist-ellipsis-menu" className="absolute right-0 top-full mt-2 w-32 bg-base-100 border border-base-content/20 rounded-lg shadow-lg z-20 flex flex-col">
                                                     <button
-                                                        className="px-4 py-2 text-left hover:bg-[#323537] text-gray-200 border-b border-gray-700"
+                                                        className="px-4 py-2 text-left hover:bg-neutral text-base-content border-b border-base-content/20"
                                                         onClick={e => {
                                                             e.stopPropagation();
                                                             setMenuOpenId(null);
@@ -127,7 +127,7 @@ const BotListPage = () => {
                                                         }}
                                                     >Editar</button>
                                                     <button
-                                                        className="px-4 py-2 text-left hover:bg-[#323537] text-red-400"
+                                                        className="px-4 py-2 text-left hover:bg-neutral text-error"
                                                         onClick={e => {
                                                             e.stopPropagation();
                                                             setMenuOpenId(null);

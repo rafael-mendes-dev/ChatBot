@@ -47,13 +47,13 @@ const EditBotForm: React.FC<EditBotFormProps> = ({ botId, isOpen, onClose, onUpd
 
     return (
         <form onSubmit={handleSubmit}>
-            {error && <p className="text-red-400 text-center mb-4 text-sm">{error}</p>}
+            {error && <p className="text-error text-center mb-4 text-sm">{error}</p>}
             {loading ? (
-                <div className="text-center text-gray-400 py-8">Salvando alterações...</div>
+                <div className="text-center text-base-content/60 py-8">Salvando alterações...</div>
             ) : (
                 <>
                     <div className="mb-4">
-                        <label htmlFor="editBotName" className="block text-gray-200 text-sm font-semibold mb-2">
+                        <label htmlFor="editBotName" className="block text-base-content text-sm font-semibold mb-2">
                             Nome do Bot:
                         </label>
                         <input
@@ -64,11 +64,11 @@ const EditBotForm: React.FC<EditBotFormProps> = ({ botId, isOpen, onClose, onUpd
                             placeholder="Ex: Assistente de Vendas"
                             required
                             disabled={loading}
-                            className="w-full px-3 py-2 bg-[#3d4043] text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
+                            className="w-full px-3 py-2 bg-base-200 text-base-content border border-base-content/20 rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder-base-content/40"
                         />
                     </div>
                     <div className="mb-6">
-                        <label htmlFor="editBotContext" className="block text-gray-200 text-sm font-semibold mb-2">
+                        <label htmlFor="editBotContext" className="block text-base-content text-sm font-semibold mb-2">
                             Contexto/Descrição Inicial:
                         </label>
                         <textarea
@@ -79,7 +79,7 @@ const EditBotForm: React.FC<EditBotFormProps> = ({ botId, isOpen, onClose, onUpd
                             rows={5}
                             required
                             disabled={loading}
-                            className="w-full px-3 py-2 bg-[#3d4043] text-white border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y placeholder-gray-400"
+                            className="w-full px-3 py-2 bg-base-200 text-base-content border border-base-content/20 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-y placeholder-base-content/40"
                         ></textarea>
                     </div>
                     <button

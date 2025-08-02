@@ -3,6 +3,7 @@ import SidebarToggle from './SidebarToggle';
 import SidebarBots from './SidebarBots';
 import Modal from '../Modal';
 import CreateBotForm from '../Forms/CreateBotForm';
+import SettingsForm from '../Forms/SettingsForm';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +14,7 @@ interface BotListProps {
 
 const Sidebar = ({ addAlert }: BotListProps) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(true);
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
     const navigate = useNavigate();
@@ -35,8 +37,8 @@ const Sidebar = ({ addAlert }: BotListProps) => {
             <div
             className={`
                 ${isMenuOpen
-                ? 'fixed inset-0 z-40 flex flex-col justify-between bg-[#282a2c] p-4 transition-all duration-300 sm:static sm:inline-flex sm:h-screen sm:w-auto sm:justify-between sm:bg-[#282a2c] sm:p-[15px] sm:px-[10px]'
-                : 'invisible fixed inset-0 z-40 flex flex-col justify-between bg-[#282a2c] p-2 transition-all duration-300 sm:visible sm:static sm:inline-flex sm:h-screen sm:w-auto sm:justify-between sm:bg-[#282a2c] sm:p-[15px] sm:px-[10px]'
+                ? 'fixed inset-0 z-40 flex flex-col justify-between bg-base-300 p-4 transition-all duration-300 sm:static sm:inline-flex sm:h-screen sm:w-auto sm:justify-between sm:bg-base-300 sm:p-[15px] sm:px-[10px]'
+                : 'invisible fixed inset-0 z-40 flex flex-col justify-between bg-base-300 p-2 transition-all duration-300 sm:visible sm:static sm:inline-flex sm:h-screen sm:w-auto sm:justify-between sm:bg-base-300 sm:p-[15px] sm:px-[10px]'
                 }`}>
                 <div className="top">
                     <div className="flex flex-col">
@@ -48,18 +50,18 @@ const Sidebar = ({ addAlert }: BotListProps) => {
                             {/* Apenas exibe os itens do menu se estiver aberto ou em desktop */}
                         {/* Novo Chatbot */}
                         <div
-                            className={`mt-[30px] flex items-center ${isMenuOpen ? 'gap-[10px] py-[10px] px-[15px] justify-start' : 'justify-center p-[10px]'} rounded-full text-sm text-gray-400 cursor-pointer bg-[#323537] hover:bg-[#3a3c3e] transition-colors duration-200`}
+                            className={`mt-[30px] flex items-center ${isMenuOpen ? 'gap-[10px] py-[10px] px-[15px] justify-start' : 'justify-center p-[10px]'} rounded-full text-sm text-neutral-content cursor-pointer bg-neutral hover:bg-neutral/80 transition-all duration-300`}
                             onClick={() => setIsModalOpen(true)}
                         >
                             <MessageSquarePlus className="flex-shrink-0" />
-                            <div className={`overflow-hidden transition-all duration-300 ease-in-out transform ${isMenuOpen ? 'opacity-100 max-w-xs translate-x-0' : 'opacity-0 max-w-0 -translate-x-2'}`}>
-                                <p className="whitespace-nowrap">Novo Chatbot</p>
+                            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 max-w-[200px] translate-x-0' : 'opacity-0 max-w-0 -translate-x-4'}`}>
+                                <p className="whitespace-nowrap transition-all duration-300">Novo Chatbot</p>
                             </div>
                         </div>
-                        <div className={`mt-[30px] mb-[20px] overflow-hidden transition-all duration-500 ease-in-out ${isMenuOpen ? 'block' : 'hidden sm:block'}`}>
-                            <p className="whitespace-nowrap">Bots criados</p>
+                        <div className={`mt-[30px] mb-[20px] overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 max-h-10 translate-y-0' : 'opacity-0 max-h-0 -translate-y-2'}`}>
+                            <p className="whitespace-nowrap text-neutral-content/80 transition-all duration-300">Bots criados</p>
                         </div>
-                        <div className={isMenuOpen ? 'block' : 'hidden sm:block'}>
+                        <div className={`transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 max-h-[500px] translate-y-0' : 'opacity-0 max-h-0 -translate-y-4 overflow-hidden'}`}>
                             <SidebarBots isOpen={isMenuOpen} key={refreshTrigger} addAlert={addAlert}/>
                         </div>
                     </div>
@@ -68,21 +70,22 @@ const Sidebar = ({ addAlert }: BotListProps) => {
                 <div className="flex flex-col">
                     {/* Ver mais bots */}
                     <div
-                        className={`flex items-center ${isMenuOpen ? 'gap-[10px] p-[10px] justify-start' : 'justify-center p-[10px]'} rounded-full text-[#d3d8d4] cursor-pointer hover:bg-[#323537] transition-colors duration-200`}
+                        className={`flex items-center ${isMenuOpen ? 'gap-[10px] p-[10px] justify-start' : 'justify-center p-[10px]'} rounded-full text-neutral-content cursor-pointer hover:bg-neutral transition-all duration-300`}
                         onClick={() => navigate('/bots')}
                     >
                         <CircleEllipsis className="flex-shrink-0" />
-                        <div className={`overflow-hidden transition-all duration-300 ease-in-out transform ${isMenuOpen ? 'opacity-100 max-w-xs translate-x-0' : 'opacity-0 max-w-0 -translate-x-2'}`}>
-                            <p className="whitespace-nowrap">Ver mais bots</p>
+                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 max-w-[200px] translate-x-0' : 'opacity-0 max-w-0 -translate-x-4'}`}>
+                            <p className="whitespace-nowrap transition-all duration-300">Ver mais bots</p>
                         </div>
                     </div>
                     {/* Configurações */}
                     <div
-                        className={`flex items-center ${isMenuOpen ? 'gap-[10px] p-[10px] justify-start' : 'justify-center p-[10px]'} rounded-full text-[#d3d8d4] cursor-pointer hover:bg-[#323537] transition-colors duration-200`}
+                        className={`flex items-center ${isMenuOpen ? 'gap-[10px] p-[10px] justify-start' : 'justify-center p-[10px]'} rounded-full text-neutral-content cursor-pointer hover:bg-neutral transition-all duration-300`}
+                        onClick={() => setIsSettingsOpen(true)}
                     >
                         <Settings className="flex-shrink-0" />
-                        <div className={`overflow-hidden transition-all duration-300 ease-in-out transform ${isMenuOpen ? 'opacity-100 max-w-xs translate-x-0' : 'opacity-0 max-w-0 -translate-x-2'}`}>
-                            <p className="whitespace-nowrap">Configurações</p>
+                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 max-w-[200px] translate-x-0' : 'opacity-0 max-w-0 -translate-x-4'}`}>
+                            <p className="whitespace-nowrap transition-all duration-300">Configurações</p>
                         </div>
                     </div>
                 </div>
@@ -91,6 +94,12 @@ const Sidebar = ({ addAlert }: BotListProps) => {
                     onClose={() => setIsModalOpen(false)}
                     onBotCreated={handleBotCreated}
                     onSuccessAlert={handleSuccessAlert}
+                    />
+                </Modal>
+                
+                <Modal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} title="Configurações">
+                    <SettingsForm
+                        onClose={() => setIsSettingsOpen(false)}
                     />
                 </Modal>
             </div>

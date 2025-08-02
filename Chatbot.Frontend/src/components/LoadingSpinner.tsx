@@ -1,6 +1,6 @@
 function LoadingSpinner() {
   return (
-    <div className="loading loading-spinner loading-xl"></div>
+    <div className="loading loading-spinner loading-md text-primary"></div>
   );
 }
 

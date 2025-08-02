@@ -2,12 +2,14 @@
 using ChatbotApi.Dto.Requests;
 using ChatbotApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotApi.Controllers;
 
 [ApiController]
 [Route("api/bots")]
+[EnableRateLimiting("fixed")]
 public class BotsController(AppDbContext context) : ControllerBase
 {
     // Cria um novo bot

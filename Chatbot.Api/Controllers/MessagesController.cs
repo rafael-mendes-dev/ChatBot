@@ -4,12 +4,14 @@ using ChatbotApi.Dto.Responses;
 using ChatbotApi.Models;
 using ChatbotApi.Util;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatbotApi.Controllers;
 
 [ApiController]
 [Route("api/messages")]
+[EnableRateLimiting("fixed")]
 public class MessagesController (AppDbContext context, IGeminiService geminiService) : ControllerBase
 {
     // Envia uma mensagem para o bot e obtém a resposta

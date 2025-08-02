@@ -124,9 +124,6 @@ cd ChatBot
 #### Usando Docker (Recomendado)
 
 ```bash
-# Defina a senha do SQL Server
-$env:SA_PASSWORD = "ChatBotPassword1!"
-
 # Inicie o container do SQL Server
 cd Chatbot.Api
 docker-compose up -d

@@ -5,7 +5,7 @@ public class Message
     public int Id { get; set; }
     public int BotId { get; set; } // Chave estrangeira
 
-    public Bot Bot { get; set; } = new(); // Navegação para o Requests
+    public Bot Bot { get; set; } = null!; // Navegação para o Requests
 
     public string UserMessage { get; set; } = string.Empty;
     public string BotResponse { get; set; } = string.Empty;

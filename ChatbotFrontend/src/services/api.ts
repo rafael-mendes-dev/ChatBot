@@ -30,6 +30,15 @@ export const getBotMessagesAsync = async (botId: number): Promise<Message[]> => 
     return response.data;
 };
 
+export const deleteBotAsync = async (botId: number): Promise<void> => {
+    await api.delete(`/bots/${botId}`);
+};
+
+export const updateBotAsync = async (botId: number, name: string, context: string): Promise<Bot> => {
+    const response = await api.put<Bot>(`/bots/${botId}`, { name, context });
+    return response.data;
+};
+
 export const sendMessageRestAsync = async (botId: number, userMessage: string): Promise<Message> => {
     const request: MessageRequest = { userMessage };
     const response = await api.post<Message>(`/bots/messages/${botId}`, request);

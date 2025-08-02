@@ -1,17 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { CircleUserRound, CornerDownRight, BotMessageSquare } from "lucide-react";
 import { useParams } from 'react-router-dom';
 import * as signalR from '@microsoft/signalr';
 import { getBotByIdAsync } from '../services/api.ts';
 import type { Message } from '../services/types.ts';
+import { marked } from 'marked';
 
 function chatWindow() {
-    const { botId } = useParams<{ botId: string }>(); // botId é uma string aqui, precisaremos converter
-    const [botName, setBotName] = useState<string>('Carregando...');
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [newMessage, setNewMessage] = useState<string>('');
-    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-    const [connectionStatus, setConnectionStatus] = useState<string>('Conectando...');
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { botId } = useParams<{ botId: string }>(); // botId é uma string aqui, precisaremos converter
+  const [botName, setBotName] = useState<string>('Carregando...');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState<string>('');
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<string>('Conectando...');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Efeito para configurar a conexão SignalR
   useEffect(() => {
@@ -46,31 +48,47 @@ function chatWindow() {
       connection.on("ReceiveMessage", (message: Message & { error?: string }) => {
         console.log("Mensagem recebida:", message);
         if (message.error) {
-            alert(`Erro do bot: ${message.error}`);
-            // Remove a mensagem do usuário que falhou, se ela foi marcada como isSending
-            setMessages((prevMessages) => prevMessages.filter(msg => !(msg.isUser && msg.isSending && msg.userMessage === message.userMessage)));
+          alert(`Erro do bot: ${message.error}`);
+          // Remove a mensagem do usuário que falhou, se ela foi marcada como isSending
+          setMessages((prevMessages) => prevMessages.filter(msg => !(msg.isUser && msg.isSending && msg.userMessage === message.userMessage)));
         } else {
-            setMessages((prevMessages) => {
-                // Tenta encontrar a mensagem do usuário que ainda está no estado "enviando"
-                // e a substitui pela mensagem real do backend que inclui a resposta do bot.
-                // O backend retorna uma única 'Message' que contém tanto userMessage quanto botResponse.
-                const updatedMessages = prevMessages.map(msg =>
-                    msg.isSending && msg.userMessage === message.userMessage
-                        ? { ...message, isUser: true, isSending: false } 
-                        : msg
-                );
+          setMessages((prevMessages) => {
+            // Tenta encontrar a mensagem do usuário que ainda está no estado "enviando"
+            // e a substitui pela mensagem real do backend que inclui a resposta do bot.
+            // O backend retorna uma única 'Message' que contém tanto userMessage quanto botResponse.
+            const updatedMessages = prevMessages.map(msg =>
+              msg.isSending && msg.userMessage === message.userMessage
+                ? { ...message, isUser: true, isSending: false }
+                : msg
+            );
 
-                if (!updatedMessages.some(m => m.id === message.id && !m.isUser)) {
-                    return [...updatedMessages, { ...message, isUser: false }];
-                }
-                return updatedMessages;
-            });
+            if (!updatedMessages.some(m => m.id === message.id && !m.isUser)) {
+              return [...updatedMessages, { ...message, isUser: false }];
+            }
+            return updatedMessages;
+          });
         }
       });
 
       connection.on("ReceiveHistory", (history: Message[]) => {
-          console.log("Histórico recebido:", history);
-          setMessages(history.map(msg => ({ ...msg, isUser: false })));
+        console.log("Histórico recebido:", history);
+        // Para cada mensagem, cria duas: uma do usuário e uma do bot
+        let counter = Date.now();
+        const formatted = history.flatMap(msg => [
+          {
+            ...msg,
+            isUser: true,
+            botResponse: "",
+            id: counter++
+          },
+          {
+            ...msg,
+            isUser: false,
+            userMessage: "",
+            id: counter++
+          }
+        ]);
+        setMessages(formatted);
       });
 
       connection.onreconnecting(() => {
@@ -128,13 +146,13 @@ function chatWindow() {
     const userMessageText = newMessage;
     // Adiciona a mensagem do usuário imediatamente com um flag "isSending"
     setMessages((prevMessages) => [...prevMessages, {
-        id: Date.now(), // ID temporário, será substituído pelo ID real do backend
-        botId: botIdNum,
-        userMessage: userMessageText,
-        botResponse: "", // Vazio porque a resposta ainda não chegou
-        timestamp: new Date().toISOString(),
-        isUser: true,
-        isSending: true // Indica que esta mensagem está aguardando resposta do bot
+      id: Date.now(), // ID temporário, será substituído pelo ID real do backend
+      botId: botIdNum,
+      userMessage: userMessageText,
+      botResponse: "", // Vazio porque a resposta ainda não chegou
+      timestamp: new Date().toISOString(),
+      isUser: true,
+      isSending: true // Indica que esta mensagem está aguardando resposta do bot
     }]);
     setNewMessage('');
 
@@ -148,46 +166,75 @@ function chatWindow() {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white rounded-lg shadow-xl flex flex-col h-[calc(100vh-100px)] mt-8">
-      <h2 className="text-3xl font-bold text-center text-blue-600 pb-4 border-b border-gray-200">
-        Conversa com {botName}
-      </h2>
-      <p className={`text-center text-sm mt-2 ${connectionStatus === 'Conectado' ? 'text-green-600' : 'text-red-600'}`}>
-        Status: {connectionStatus}
-      </p>
-
-      <div className="flex-grow overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => (
-          <div key={msg.id || msg.timestamp} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-md p-3 rounded-lg shadow-md relative ${msg.isUser ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-              <p className="text-sm">{msg.isUser ? msg.userMessage : msg.botResponse}</p>
-              {msg.isSending && <span className="absolute bottom-1 right-2 text-xs text-gray-500 italic">Enviando...</span>}
-              <span className="absolute bottom-1 right-2 text-xs text-gray-500">
-                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </div>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+    <div className="flex-1 bg-[#1e2020] flex flex-col overflow-hidden h-screen">
+      <div className="flex items-center justify-between text-2xl text-gray-400 px-8 pt-8 pb-4 min-h-[64px]">
+        <p className="font-bold text-gray-400 truncate max-w-[80vw]">{botName}</p>
+        <CircleUserRound className="cursor-pointer hover:scale-115" />
       </div>
-
-      <form onSubmit={handleSendMessage} className="flex p-4 border-t border-gray-200">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Digite sua mensagem..."
-          disabled={connectionStatus !== 'Conectado'}
-          className="flex-grow mr-4 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          disabled={connectionStatus !== 'Conectado' || !newMessage.trim()}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition duration-200"
-        >
-          Enviar
-        </button>
-      </form>
+      <div className="max-w-4xl m-auto w-full flex flex-col font-normal px-8 pb-8 pt-2 h-[calc(100vh-80px)]">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#323537] scrollbar-track-[#232425] scroll-smooth">
+          {/* Agrupa mensagens do usuário e bot em pares */}
+          {(() => {
+            const pairs = [];
+            for (let i = 0; i < messages.length; i += 2) {
+              const userMsg = messages[i];
+              const botMsg = messages[i + 1];
+              if (!userMsg || !botMsg) continue;
+              pairs.push(
+                <div key={userMsg.id} className="w-full mb-6">
+                  <div className="flex justify-end">
+                    <div className="max-w-xl w-fit p-4 rounded-2xl shadow-md bg-[#333537] text-white font-medium relative">
+                      <p className="text-base">{userMsg.userMessage}</p>
+                      {userMsg.isSending && <span className="absolute bottom-1 right-2 text-xs text-gray-400 italic">Enviando...</span>}
+                      <span className="absolute bottom-1 right-2 text-xs text-gray-400">
+                        {new Date(userMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full flex flex-col items-stretch mt-2">
+                    <hr className="border-gray-700 mb-2" />
+                    <div className="w-full flex items-start gap-2 relative">
+                      <div className="min-w-[28px] flex flex-col items-center justify-between h-full">
+                        <span className="mt-1 text-blue-500"><BotMessageSquare size={22} /></span>
+                        <span className="w-full text-left text-xs text-gray-400 mt-2">
+                          {new Date(botMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-base text-gray-200" style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: marked.parse(botMsg.botResponse) }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            return pairs;
+          })()}
+          <div ref={messagesEndRef} />
+        </div>
+        <form onSubmit={handleSendMessage} className="flex p-4 mt-4 rounded-xl bg-transparent">
+          <div className="relative flex-grow">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Digite sua mensagem..."
+              disabled={connectionStatus !== 'Conectado'}
+              className="w-full pr-10 pl-4 py-2 bg-transparent text-white border border-gray-700/50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+            />
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <CornerDownRight size={22} />
+            </span>
+          </div>
+          <button
+            type="submit"
+            disabled={connectionStatus !== 'Conectado' || !newMessage.trim()}
+            className="ml-2 bg-gradient-to-r from-blue-500 to-violet-600 hover:scale-105 text-white font-bold py-2 px-3 rounded-full transition duration-200 text-sm"
+          >
+            Enviar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

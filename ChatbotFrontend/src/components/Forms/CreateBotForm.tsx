@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import { createBotAsync } from '../services/api';
+import { createBotAsync } from '../../services/api';
 
 
 interface CreateBotFormProps {
@@ -42,7 +42,7 @@ const CreateBotForm: React.FC<CreateBotFormProps> = ({ onClose, onBotCreated, on
   return (
     <form onSubmit={handleSubmit}>
       {error && <p className="text-red-400 text-center mb-4 text-sm">{error}</p>} {/* Erro permanece no modal */}
-      
+
       {loading ? (
         <div className="text-center text-gray-400 py-8">Criando bot...</div>
       ) : (

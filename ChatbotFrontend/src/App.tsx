@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AlertContainer, { type AlertMessage } from './components/AlertContainer'; 
 import './index.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import Main from './components/Main/Main';
+import ChatWindow from './pages/ChatWindow';
+import BotListPage from './pages/BotListPage';
 
 function App() {
   const [alerts, setAlerts] = useState<AlertMessage[]>([]);
@@ -24,11 +26,17 @@ function App() {
   }, []);
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar addAlert={addAlert} />
-      <Main />
-      <AlertContainer alerts={alerts} removeAlert={removeAlert} />
-    </div>
+    <Router>
+      <div className="flex min-h-screen">
+        <Sidebar addAlert={addAlert} />
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/chat/:botId" element={<ChatWindow />} />
+          <Route path="/bots" element={<BotListPage />} />
+        </Routes>
+        <AlertContainer alerts={alerts} removeAlert={removeAlert} />
+      </div>
+    </Router>
   );
 }
 

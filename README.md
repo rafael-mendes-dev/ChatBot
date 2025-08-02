@@ -259,12 +259,6 @@ cd Chatbot.Tests
 dotnet test
 ```
 
-### Executar Testes com Cobertura
-
-```bash
-dotnet test --collect:"XPlat Code Coverage"
-```
-
 ### Estrutura dos Testes
 
 - **BotsControllerTests**: Testes do CRUD de bots

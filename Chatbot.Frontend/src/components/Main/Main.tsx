@@ -8,7 +8,7 @@ const Main = () => {
         <CircleUserRound className="cursor-pointer hover:scale-115" />
       </div>
       <div className="max-w-4xl m-auto font-normal p-[20px]">
-        <h1 className="text-6xl font-normal mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Olá, bem vindo!</h1>
+        <h1 className="text-6xl font-normal mb-4 bg-linear-16 bg-clip-text text-transparent from-blue-500 to-violet-600">Olá, bem vindo!</h1>
         <p className="text-6xl text-base-content/60">Como posso te ajudar hoje?</p>
         <p className="text-2xl text-base-content/40 mt-4">Selecione uma opção no menu lateral para começar.</p>
       </div>

@@ -6,7 +6,7 @@ services:
         container_name: chatbot_sqlserver
         environment:
             - ACCEPT_EULA=Y
-            - SA_PASSWORD=${SA_PASSWORD}
+            - SA_PASSWORD=ChatBotPassword1!
         ports:
             - "1433:1433"
         volumes:

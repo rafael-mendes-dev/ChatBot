@@ -5,6 +5,7 @@ import * as signalR from '@microsoft/signalr';
 import { getBotByIdAsync } from '../services/api.ts';
 import type { Message } from '../services/types.ts';
 import { marked } from 'marked';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function chatWindow() {
   const { botId } = useParams<{ botId: string }>(); // botId é uma string aqui, precisaremos converter
@@ -49,23 +50,28 @@ function chatWindow() {
         console.log("Mensagem recebida:", message);
         if (message.error) {
           alert(`Erro do bot: ${message.error}`);
-          // Remove a mensagem do usuário que falhou, se ela foi marcada como isSending
+          // Remove a mensagem do usuário que falhou
           setMessages((prevMessages) => prevMessages.filter(msg => !(msg.isUser && msg.isSending && msg.userMessage === message.userMessage)));
         } else {
           setMessages((prevMessages) => {
-            // Tenta encontrar a mensagem do usuário que ainda está no estado "enviando"
-            // e a substitui pela mensagem real do backend que inclui a resposta do bot.
-            // O backend retorna uma única 'Message' que contém tanto userMessage quanto botResponse.
-            const updatedMessages = prevMessages.map(msg =>
-              msg.isSending && msg.userMessage === message.userMessage
-                ? { ...message, isUser: true, isSending: false }
-                : msg
-            );
-
-            if (!updatedMessages.some(m => m.id === message.id && !m.isUser)) {
-              return [...updatedMessages, { ...message, isUser: false }];
-            }
-            return updatedMessages;
+            // Remove a mensagem temporária do usuário que estava com isSending = true
+            const filteredMessages = prevMessages.filter(msg => !(msg.isSending && msg.userMessage === message.userMessage));
+            
+            // Adiciona a mensagem do usuário (sem isSending) e a resposta do bot
+            return [
+              ...filteredMessages,
+              {
+                ...message,
+                isUser: true,
+                isSending: false,
+                botResponse: ""
+              },
+              {
+                ...message,
+                isUser: false,
+                userMessage: ""
+              }
+            ];
           });
         }
       });
@@ -173,43 +179,56 @@ function chatWindow() {
       </div>
       <div className="max-w-4xl m-auto w-full flex flex-col font-normal px-8 pb-8 pt-2 h-[calc(100vh-80px)]">
         <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#323537] scrollbar-track-[#232425] scroll-smooth">
-          {/* Agrupa mensagens do usuário e bot em pares */}
-          {(() => {
-            const pairs = [];
-            for (let i = 0; i < messages.length; i += 2) {
-              const userMsg = messages[i];
-              const botMsg = messages[i + 1];
-              if (!userMsg || !botMsg) continue;
-              pairs.push(
-                <div key={userMsg.id} className="w-full mb-6">
+          {/* Renderiza mensagens individuais */}
+          {messages.map((message) => {
+            if (message.isUser) {
+              return (
+                <div key={message.id} className="w-full mb-6">
                   <div className="flex justify-end">
                     <div className="max-w-xl w-fit p-4 rounded-2xl shadow-md bg-[#333537] text-white font-medium relative">
-                      <p className="text-base">{userMsg.userMessage}</p>
-                      {userMsg.isSending && <span className="absolute bottom-1 right-2 text-xs text-gray-400 italic">Enviando...</span>}
+                      <p className="text-base">{message.userMessage}</p>
                       <span className="absolute bottom-1 right-2 text-xs text-gray-400">
-                        {new Date(userMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   </div>
-                  <div className="w-full flex flex-col items-stretch mt-2">
+                  {/* Verifica se deve mostrar o loading spinner */}
+                  {message.isSending && (
+                    <div className="w-full flex flex-col items-stretch mt-2">
+                      <hr className="border-gray-700 mb-2" />
+                      <div className="w-full flex items-start gap-2 relative">
+                        <div className="min-w-[28px] flex flex-col items-center justify-start h-full">
+                          <span className="mt-1 text-blue-500"><BotMessageSquare size={22} /></span>
+                        </div>
+                        <div className="flex-1 flex items-center">
+                          <LoadingSpinner />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            } else {
+              return (
+                <div key={message.id} className="w-full mb-6">
+                  <div className="w-full flex flex-col items-stretch">
                     <hr className="border-gray-700 mb-2" />
                     <div className="w-full flex items-start gap-2 relative">
                       <div className="min-w-[28px] flex flex-col items-center justify-between h-full">
                         <span className="mt-1 text-blue-500"><BotMessageSquare size={22} /></span>
                         <span className="w-full text-left text-xs text-gray-400 mt-2">
-                          {new Date(botMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       <div className="flex-1">
-                        <p className="text-base text-gray-200" style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: marked.parse(botMsg.botResponse) }} />
+                        <p className="text-base text-gray-200" style={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: marked.parse(message.botResponse) }} />
                       </div>
                     </div>
                   </div>
                 </div>
               );
             }
-            return pairs;
-          })()}
+          })}
           <div ref={messagesEndRef} />
         </div>
         <form onSubmit={handleSendMessage} className="flex p-4 mt-4 rounded-xl bg-transparent">

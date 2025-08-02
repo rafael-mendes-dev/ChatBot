@@ -182,6 +182,8 @@ A aplicação estará disponível em:
 - **Backend API**: https://localhost:7144
 - **Swagger**: https://localhost:7144/swagger
 
+> **⚠️ Nota sobre Portas**: As portas podem variar dependendo da configuração do seu ambiente. Verifique o terminal onde os serviços estão rodando para confirmar as portas corretas. Se necessário, ajuste as configurações de CORS no backend (`Program.cs`) e as URLs base no frontend (`services/`) para corresponder às portas utilizadas.
+
 ## 🎮 Como Usar
 
 ### 1. Criar um Novo Bot

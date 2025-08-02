@@ -130,4 +130,139 @@ public class BotsControllerTests
         // Assert: Garante que a busca retornou um status 404 Not Found
         Assert.AreEqual(HttpStatusCode.NotFound, getResponse.StatusCode, "A busca pelo bot excluído deve retornar 404.");
     }
+
+    [TestMethod]
+    public async Task Cria_bot_com_nome_vazio_retorna_BadRequest()
+    {
+        // Arrange
+        var newBot = new Bot
+        {
+            Name = "",
+            Context = "Contexto válido"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/bots", newBot);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "Esperado status 400 para nome vazio.");
+    }
+
+    [TestMethod]
+    public async Task Cria_bot_com_contexto_vazio_retorna_BadRequest()
+    {
+        // Arrange
+        var newBot = new Bot
+        {
+            Name = "Bot válido",
+            Context = ""
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/bots", newBot);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "Esperado status 400 para contexto vazio.");
+    }
+
+    [TestMethod]
+    public async Task Cria_bot_com_nome_apenas_espacos_retorna_BadRequest()
+    {
+        // Arrange
+        var newBot = new Bot
+        {
+            Name = "   ",
+            Context = "Contexto válido"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/bots", newBot);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "Esperado status 400 para nome com apenas espaços.");
+    }
+
+    [TestMethod]
+    public async Task Atualiza_bot_inexistente_retorna_NotFound()
+    {
+        // Arrange
+        var botIdInexistente = 99999;
+        var updatedBot = new Bot
+        {
+            Id = botIdInexistente,
+            Name = "Bot Inexistente",
+            Context = "Contexto qualquer"
+        };
+
+        // Act
+        var response = await _client.PutAsJsonAsync($"/api/bots/{botIdInexistente}", updatedBot);
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode, "Esperado status 404 para bot inexistente.");
+    }
+
+    [TestMethod]
+    public async Task Exclui_bot_inexistente_retorna_NotFound()
+    {
+        // Arrange
+        var botIdInexistente = 99999;
+
+        // Act
+        var response = await _client.DeleteAsync($"/api/bots/{botIdInexistente}");
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode, "Esperado status 404 para bot inexistente.");
+    }
+
+    [TestMethod]
+    public async Task Busca_bot_inexistente_retorna_NotFound()
+    {
+        // Arrange
+        var botIdInexistente = 99999;
+
+        // Act
+        var response = await _client.GetAsync($"/api/bots/{botIdInexistente}");
+
+        // Assert
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode, "Esperado status 404 para bot inexistente.");
+    }
+
+    [TestMethod]
+    public async Task Busca_bots_com_paginacao_retorna_lista_limitada()
+    {
+        // Arrange - Criar alguns bots para teste
+        var botsParaTeste = new List<int>();
+        for (int i = 1; i <= 3; i++)
+        {
+            var bot = new Bot { Name = $"Bot Paginação {i}", Context = $"Contexto {i}" };
+            var createResponse = await _client.PostAsJsonAsync("/api/bots", bot);
+            createResponse.EnsureSuccessStatusCode();
+            var createdBot = await createResponse.Content.ReadFromJsonAsync<Bot>();
+            Assert.IsNotNull(createdBot);
+            botsParaTeste.Add(createdBot.Id);
+        }
+
+        // Act - Buscar com paginação (página 1, tamanho 2)
+        var response = await _client.GetAsync("/api/bots?pageNumber=1&pageSize=2");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var bots = await response.Content.ReadFromJsonAsync<List<Bot>>();
+        Assert.IsNotNull(bots);
+        Assert.IsTrue(bots.Count <= 2, "Esperado no máximo 2 bots por página.");
+
+        // Act e Assert: Limpeza (Tear Down)
+        foreach (var botId in botsParaTeste)
+        {
+            var deleteResponse = await _client.DeleteAsync($"/api/bots/{botId}");
+            deleteResponse.EnsureSuccessStatusCode();
+        }
+    }
+
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        _client?.Dispose();
+        _factory?.Dispose();
+    }
 }

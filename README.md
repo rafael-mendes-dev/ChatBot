@@ -179,8 +179,8 @@ npm run dev
 
 A aplicação estará disponível em:
 - **Frontend**: http://localhost:5173
-- **Backend API**: https://localhost:7144
-- **Swagger**: https://localhost:7144/swagger
+- **Backend API**: https://localhost:5235
+- **Swagger**: https://localhost:5235/swagger/index.html
 
 > **⚠️ Nota sobre Portas**: As portas podem variar dependendo da configuração do seu ambiente. Verifique o terminal onde os serviços estão rodando para confirmar as portas corretas. Se necessário, ajuste as configurações de CORS no backend (`Program.cs`) e as URLs base no frontend (`services/`) para corresponder às portas utilizadas.
 

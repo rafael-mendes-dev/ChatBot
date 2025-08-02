@@ -10,7 +10,7 @@ namespace ChatbotApi.Controllers;
 
 [ApiController]
 [Route("api/messages")]
-public class MessagesController (AppDbContext _context, IGeminiService _geminiService) : ControllerBase
+public class MessagesController (AppDbContext context, IGeminiService geminiService) : ControllerBase
 {
     // Envia uma mensagem para o bot e obtém a resposta
     // POST: api/Bots/{botId}/messages
@@ -21,16 +21,16 @@ public class MessagesController (AppDbContext _context, IGeminiService _geminiSe
         if (string.IsNullOrWhiteSpace(request.UserMessage))
             return BadRequest("A mensagem do usuário é obrigatória.");
         
-        var bot = await _context.Bots.FindAsync(botId);
+        var bot = await context.Bots.FindAsync(botId);
         if (bot == null)
             return NotFound("Requests não encontrado.");
         
         // Recupera o histórico de mensagens
-        // Limite o histórico para as últimas N mensagens para controlar o tamanho do prompt
-        var chatHistory = await _context.Messages
+        // Limita o histórico para as últimas N mensagens para controlar o tamanho do prompt
+        var chatHistory = await context.Messages
                                         .Where(m => m.BotId == botId)
                                         .OrderByDescending(m => m.Timestamp) // Pega as mais recentes primeiro
-                                        .Take(10) // Pega as últimas 10 mensagens
+                                        .Take(5) // Pega as últimas 5 mensagens
                                         .OrderBy(m => m.Timestamp) // Ordena novamente para a ordem cronológica
                                         .ToListAsync();
 
@@ -38,7 +38,7 @@ public class MessagesController (AppDbContext _context, IGeminiService _geminiSe
         {
             // Obtem a resposta do bot 
             var botResponseContent =
-                await _geminiService.GetChatbotResponseAsync(bot.Context, chatHistory, request.UserMessage);
+                await geminiService.GetChatbotResponseAsync(bot.Context, chatHistory, request.UserMessage);
 
             // Cria e salva a nova mensagem (tanto do usuário quanto a resposta do bot)
             var newMessage = new Message
@@ -50,8 +50,8 @@ public class MessagesController (AppDbContext _context, IGeminiService _geminiSe
                 Timestamp = DateTime.UtcNow
             };
 
-            _context.Messages.Add(newMessage);
-            await _context.SaveChangesAsync();
+            context.Messages.Add(newMessage);
+            await context.SaveChangesAsync();
 
             return Ok(newMessage);
         }
@@ -71,22 +71,29 @@ public class MessagesController (AppDbContext _context, IGeminiService _geminiSe
     [EndpointSummary("Obtém todas as mensagens de um bot específico, ordenadas por data e hora.")]
     public async Task<ActionResult<IEnumerable<GetMessagesResponse>>> GetMessages(int botId)
     {
-        var messages = await _context.Messages
-                                                .Where(m => m.BotId == botId)
-                                                .OrderBy(m => m.Timestamp) // Ordena por data e hora
-                                                .ToListAsync();
-        
-        var responseMessages = messages.Select(m => new GetMessagesResponse
+        try
         {
-            UserMessage = m.UserMessage,
-            BotResponse = m.BotResponse,
-            Timestamp = m.Timestamp
-        }).ToList();
-        
+            var messages = await context.Messages
+                .Where(m => m.BotId == botId)
+                .OrderBy(m => m.Timestamp) // Ordena por data e hora
+                .ToListAsync();
 
-        if (!responseMessages.Any())
-            return Ok(new List<GetMessagesResponse>()); // Retorna uma lista vazia se não houver mensagens
+            var responseMessages = messages.Select(m => new GetMessagesResponse
+            {
+                UserMessage = m.UserMessage,
+                BotResponse = m.BotResponse,
+                Timestamp = m.Timestamp
+            }).ToList();
 
-        return Ok(responseMessages); 
+
+            if (!responseMessages.Any())
+                return Ok(new List<GetMessagesResponse>()); // Retorna uma lista vazia se não houver mensagens
+
+            return Ok(responseMessages);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, new { message = $"Ocorreu um erro inesperado: {e.Message}" });
+        }
     }
 }

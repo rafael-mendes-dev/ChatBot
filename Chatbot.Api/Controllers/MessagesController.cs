@@ -14,7 +14,7 @@ public class MessagesController (AppDbContext context, IGeminiService geminiServ
 {
     // Envia uma mensagem para o bot e obtém a resposta
     // POST: api/Bots/{botId}/messages
-    [HttpPost("/messages/{botId}")]
+    [HttpPost("{botId}")]
     [EndpointSummary("Envia uma mensagem para o bot e obtém a resposta.")]
     public async Task<ActionResult<Bot>> SendMessage(int botId, [FromBody] SendMessageRequest request)
     {
@@ -67,7 +67,7 @@ public class MessagesController (AppDbContext context, IGeminiService geminiServ
     
     // Obtém todas as mensagens de um bot específico
     // GET: api/Bots/{botId}/messages
-    [HttpGet("/messages/{botId}")]
+    [HttpGet("{botId}")]
     [EndpointSummary("Obtém todas as mensagens de um bot específico, ordenadas por data e hora.")]
     public async Task<ActionResult<IEnumerable<GetMessagesResponse>>> GetMessages(int botId)
     {

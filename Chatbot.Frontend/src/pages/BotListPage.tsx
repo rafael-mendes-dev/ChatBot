@@ -152,24 +152,37 @@ const BotListPage = () => {
                         addAlert={handleAlert}
                     />
                 </Modal>
-                <Modal isOpen={!!deleteBotId} onClose={() => setDeleteBotId(null)} title="Excluir Bot">
-                    <DeleteBotForm
-                        botId={deleteBotId}
-                        botName={deleteBotId ? bots.find(b => b.id === deleteBotId)?.name : ''}
-                        isOpen={!!deleteBotId}
-                        onClose={() => setDeleteBotId(null)}
-                        onDeleted={handleDeleted}
-                        addAlert={handleAlert}
-                    />
-                </Modal>
+                <DeleteBotForm
+                    botId={deleteBotId}
+                    botName={deleteBotId ? bots.find(b => b.id === deleteBotId)?.name : ''}
+                    isOpen={!!deleteBotId}
+                    onClose={() => setDeleteBotId(null)}
+                    onDeleted={handleDeleted}
+                    addAlert={handleAlert}
+                />
                 {alert && (
-                    <div className={`fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${alert.type === "success"
-                            ? "bg-green-600 text-white"
+                    <div className={`fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 flex items-center gap-2 ${alert.type === "success"
+                            ? "alert-success"
                             : alert.type === "error"
-                                ? "bg-red-600 text-white"
-                                : "bg-blue-600 text-white"
+                                ? "alert-error"
+                                : "alert-info"
                         }`}>
-                        {alert.message}
+                        {alert.type === "success" && (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        )}
+                        {alert.type === "error" && (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        )}
+                        {alert.type === "info" && (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        )}
+                        <span>{alert.message}</span>
                     </div>
                 )}
             </div>

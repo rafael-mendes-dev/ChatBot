@@ -1,4 +1,5 @@
 import React, { type ReactNode, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -48,7 +49,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   // Se o modal não está aberto, não renderiza nada
   if (!isOpen) return null;
 
-  return (
+  // Renderizar o modal diretamente no body usando createPortal
+  return createPortal(
     <div 
       className="modal" 
       onClick={handleBackdropClick}
@@ -65,7 +67,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
         {title && <h2 className="text-2xl font-bold text-center mb-6 text-base-content">{title}</h2>}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

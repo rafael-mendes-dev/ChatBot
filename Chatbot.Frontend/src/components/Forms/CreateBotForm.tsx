@@ -80,7 +80,7 @@ const CreateBotForm: React.FC<CreateBotFormProps> = ({ onClose, onBotCreated, on
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 hover:scale-105 hover:bg-lime-500 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200"
+            className="w-full bg-success hover:scale-105 hover:bg-success/90 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-200"
           >
             Criar Bot
           </button>

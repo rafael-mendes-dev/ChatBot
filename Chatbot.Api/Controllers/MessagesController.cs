@@ -18,14 +18,17 @@ public class MessagesController (AppDbContext context, IGeminiService geminiServ
     // POST: api/Bots/{botId}/messages
     [HttpPost("{botId}")]
     [EndpointSummary("Envia uma mensagem para o bot e obtém a resposta.")]
-    public async Task<ActionResult<Bot>> SendMessage(int botId, [FromBody] SendMessageRequest request)
+    public async Task<ActionResult<GetMessagesResponse>> SendMessage(int botId, [FromBody] SendMessageRequest request)
     {
+        if (botId <= 0)
+            return BadRequest("O ID do bot deve ser um número positivo.");
+        
         if (string.IsNullOrWhiteSpace(request.UserMessage))
             return BadRequest("A mensagem do usuário é obrigatória.");
         
         var bot = await context.Bots.FindAsync(botId);
         if (bot == null)
-            return NotFound("Requests não encontrado.");
+            return NotFound("Bot não encontrado.");
         
         // Recupera o histórico de mensagens
         // Limita o histórico para as últimas N mensagens para controlar o tamanho do prompt
@@ -46,7 +49,6 @@ public class MessagesController (AppDbContext context, IGeminiService geminiServ
             var newMessage = new Message
             {
                 BotId = botId,
-                Bot = bot,
                 UserMessage = request.UserMessage,
                 BotResponse = botResponseContent,
                 Timestamp = DateTime.UtcNow
@@ -55,7 +57,12 @@ public class MessagesController (AppDbContext context, IGeminiService geminiServ
             context.Messages.Add(newMessage);
             await context.SaveChangesAsync();
 
-            return Ok(newMessage);
+            return Ok(new GetMessagesResponse
+            {
+                UserMessage = newMessage.UserMessage,
+                BotResponse = newMessage.BotResponse,
+                Timestamp = newMessage.Timestamp
+            });
         }
         catch (ApplicationException e)
         {

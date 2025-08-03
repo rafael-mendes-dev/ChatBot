@@ -6,6 +6,7 @@ import { getBotByIdAsync } from '../services/api.ts';
 import type { Message } from '../services/types.ts';
 import { marked } from 'marked';
 import LoadingSpinner from '../components/LoadingSpinner';
+import '../index.css'
 
 function chatWindow() {
   const { botId } = useParams<{ botId: string }>(); // botId é uma string aqui, precisaremos converter

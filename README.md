@@ -14,8 +14,6 @@ Um sistema de chatbot moderno e completo desenvolvido com ASP.NET Core e React, 
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [API Endpoints](#api-endpoints)
 - [Testes](#testes)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
 
 ## 🎯 Sobre o Projeto
 

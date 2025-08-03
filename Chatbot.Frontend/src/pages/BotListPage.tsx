@@ -79,7 +79,7 @@ const BotListPage = () => {
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
-                <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#323537] scrollbar-track-[#232425]">
+                <div className="flex-1 overflow-y-auto scrollbar-custom">
                     {loading ? (
                         <div className="text-center text-base-content/60">Carregando...</div>
                     ) : (

@@ -178,7 +178,7 @@ function chatWindow() {
         <CircleUserRound className="cursor-pointer hover:scale-115" />
       </div>
       <div className="max-w-4xl m-auto w-full flex flex-col font-normal px-8 pb-8 pt-2 h-[calc(100vh-80px)]">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-neutral scrollbar-track-base-200 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-custom scroll-smooth">
           {/* Renderiza mensagens individuais */}
           {messages.map((message) => {
             if (message.isUser) {

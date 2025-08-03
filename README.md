@@ -52,7 +52,6 @@ O ChatBot é uma aplicação full-stack que permite a criação e gerenciamento 
 
 ### DevOps
 - **Docker Compose** - Containerização do SQL Server
-- **PowerShell** - Scripts de automação
 
 ## 🏗️ Arquitetura
 

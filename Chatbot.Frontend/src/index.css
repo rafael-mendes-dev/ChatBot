@@ -367,32 +367,6 @@ html, body {
   background-color: var(--color-neutral);
 }
 
-/* Função JavaScript para alternar temas (adicionar ao componente React):
-  
-  const toggleTheme = () => {
-    const root = document.documentElement;
-    const currentTheme = root.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? null : 'light';
-    
-    if (newTheme) {
-      root.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-    } else {
-      root.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'dark');
-    }
-  };
-
-  // Para aplicar o tema salvo ao carregar a página:
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  }, []);
-
-*/
-
 /* Estilos customizados para scrollbar minimalista */
 .scrollbar-custom {
   scrollbar-width: thin;

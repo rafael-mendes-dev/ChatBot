@@ -183,7 +183,7 @@ A aplicação estará disponível em:
 ### 1. Criar um Novo Bot
 
 1. Acesse a aplicação no navegador
-2. Clique em "Criar Novo Bot"
+2. Clique em "Novo chatbot"
 3. Preencha o nome e contexto do bot
 4. Clique em "Salvar"
 

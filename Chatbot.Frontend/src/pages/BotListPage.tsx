@@ -7,6 +7,10 @@ import EditBotForm from "../components/Forms/EditBotForm";
 import DeleteBotForm from "../components/Forms/DeleteBotForm";
 import Modal from "../components/Modal";
 
+interface BotListPageProps {
+  addAlert: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
+}
+
 const PageHeader = () => (
     <div className="flex items-center justify-between text-2xl text-base-content/60 p-[20px]">
         <p>Chatbot</p>
@@ -14,18 +18,14 @@ const PageHeader = () => (
     </div>
 );
 
-const BotListPage = () => {
+const BotListPage = ({ addAlert }: BotListPageProps) => {
     const [bots, setBots] = useState<BotType[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
     const [editBotId, setEditBotId] = useState<number | null>(null);
     const [deleteBotId, setDeleteBotId] = useState<number | null>(null);
-    const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
-    const handleAlert = (message: string, type: "success" | "error" | "info" = "info") => {
-        setAlert({ message, type });
-        setTimeout(() => setAlert(null), 3000);
-    };
+    
     const handleDeleted = async () => {
         await fetchBots();
         setDeleteBotId(null);
@@ -149,7 +149,7 @@ const BotListPage = () => {
                         isOpen={!!editBotId}
                         onClose={() => setEditBotId(null)}
                         onUpdated={fetchBots}
-                        addAlert={handleAlert}
+                        addAlert={addAlert}
                     />
                 </Modal>
                 <DeleteBotForm
@@ -158,33 +158,8 @@ const BotListPage = () => {
                     isOpen={!!deleteBotId}
                     onClose={() => setDeleteBotId(null)}
                     onDeleted={handleDeleted}
-                    addAlert={handleAlert}
+                    addAlert={addAlert}
                 />
-                {alert && (
-                    <div className={`fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 flex items-center gap-2 ${alert.type === "success"
-                            ? "alert-success"
-                            : alert.type === "error"
-                                ? "alert-error"
-                                : "alert-info"
-                        }`}>
-                        {alert.type === "success" && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        )}
-                        {alert.type === "error" && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        )}
-                        {alert.type === "info" && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        )}
-                        <span>{alert.message}</span>
-                    </div>
-                )}
             </div>
         </div>
     );

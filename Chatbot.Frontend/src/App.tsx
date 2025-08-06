@@ -11,7 +11,7 @@ function App() {
   const [alerts, setAlerts] = useState<AlertMessage[]>([]);
 
   // Função para adicionar um novo alerta
-  const addAlert = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  const addAlert = useCallback((message: string, type: 'success' | 'error' | 'info' | 'warning' = 'warning') => {
     const newAlert: AlertMessage = {
       id: Math.random().toString(36).substring(2, 9), 
       message,
@@ -31,8 +31,8 @@ function App() {
         <Sidebar addAlert={addAlert} />
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/chat/:botId" element={<ChatWindow />} />
-          <Route path="/bots" element={<BotListPage />} />
+          <Route path="/chat/:botId" element={<ChatWindow addAlert={addAlert} />} />
+          <Route path="/bots" element={<BotListPage addAlert={addAlert} />} />
         </Routes>
         <AlertContainer alerts={alerts} removeAlert={removeAlert} />
       </div>

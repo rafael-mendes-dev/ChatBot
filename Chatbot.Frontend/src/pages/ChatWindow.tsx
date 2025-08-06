@@ -8,57 +8,53 @@ import { marked } from 'marked';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../index.css'
 
-function chatWindow() {
-  const { botId } = useParams<{ botId: string }>(); // botId é uma string aqui, precisaremos converter
+interface ChatWindowProps {
+  addAlert: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
+}
+
+function chatWindow({ addAlert }: ChatWindowProps) {
+  const { botId } = useParams<{ botId: string }>();
   const [botName, setBotName] = useState<string>('Carregando...');
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<string>('Conectando...');
+  const [isConnected, setIsConnected] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Efeito para configurar a conexão SignalR
   useEffect(() => {
     const botIdNum = parseInt(botId || '0');
     if (isNaN(botIdNum) || botIdNum === 0) {
-      setConnectionStatus('ID do bot inválido');
       return;
     }
 
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5235/chatHub") // URL do seu SignalR Hub no backend
+      .withUrl("http://localhost:5235/chatHub")
       .withAutomaticReconnect()
       .build();
 
     setConnection(newConnection);
-  }, [botId]); // Depende do botId para recriar a conexão se o ID mudar
+  }, [botId]);
 
   useEffect(() => {
     if (connection) {
       connection.start()
         .then(() => {
-          setConnectionStatus('Conectado');
-          console.log('Conectado ao SignalR Hub!');
-          connection.invoke("GetBotHistory", parseInt(botId || '0'))
-            .catch(err => console.error("Erro ao obter histórico do bot:", err));
+          setIsConnected(true);
+          connection.invoke("GetBotHistory", parseInt(botId || '0'));
         })
-        .catch(e => {
-          setConnectionStatus('Erro na conexão');
-          console.error('Erro ao conectar ao SignalR Hub:', e);
+        .catch(() => {
+          setIsConnected(false);
         });
 
       connection.on("ReceiveMessage", (message: Message & { error?: string }) => {
-        console.log("Mensagem recebida:", message);
         if (message.error) {
-          alert(`Erro do bot: ${message.error}`);
-          // Remove a mensagem do usuário que falhou
+          addAlert(`Erro do bot: ${message.error}`, 'error');
           setMessages((prevMessages) => prevMessages.filter(msg => !(msg.isUser && msg.isSending && msg.userMessage === message.userMessage)));
         } else {
           setMessages((prevMessages) => {
-            // Remove a mensagem temporária do usuário que estava com isSending = true
             const filteredMessages = prevMessages.filter(msg => !(msg.isSending && msg.userMessage === message.userMessage));
             
-            // Adiciona a mensagem do usuário (sem isSending) e a resposta do bot
             return [
               ...filteredMessages,
               {
@@ -78,7 +74,6 @@ function chatWindow() {
       });
 
       connection.on("ReceiveHistory", (history: Message[]) => {
-        console.log("Histórico recebido:", history);
         // Para cada mensagem, cria duas: uma do usuário e uma do bot
         let counter = Date.now();
         const formatted = history.flatMap(msg => [
@@ -99,26 +94,21 @@ function chatWindow() {
       });
 
       connection.onreconnecting(() => {
-        setConnectionStatus('Reconectando...');
-        console.log('Reconectando ao SignalR Hub...');
+        setIsConnected(false);
       });
 
       connection.onreconnected(() => {
-        setConnectionStatus('Conectado');
-        console.log('Reconectado ao SignalR Hub!');
-        connection.invoke("GetBotHistory", parseInt(botId || '0'))
-          .catch(err => console.error("Erro ao obter histórico do bot após reconexão:", err));
+        setIsConnected(true);
+        connection.invoke("GetBotHistory", parseInt(botId || '0'));
       });
 
       return () => {
-        connection.stop()
-          .then(() => console.log('Conexão SignalR parada.'))
-          .catch(e => console.error('Erro ao parar conexão SignalR:', e));
+        connection.stop();
       };
     }
   }, [connection, botId]);
 
-  // Efeito para buscar o nome do bot (usando API REST)
+  // Efeito para buscar o nome do bot
   useEffect(() => {
     const fetchBotName = async () => {
       const id = parseInt(botId || '0');
@@ -130,7 +120,6 @@ function chatWindow() {
         const bot = await getBotByIdAsync(id);
         setBotName(bot.name);
       } catch (err) {
-        console.error('Erro ao buscar nome do bot:', err);
         setBotName('Bot Desconhecido');
       }
     };
@@ -146,28 +135,27 @@ function chatWindow() {
     e.preventDefault();
     const botIdNum = parseInt(botId || '0');
     if (!newMessage.trim() || !connection || connection.state !== signalR.HubConnectionState.Connected || isNaN(botIdNum)) {
-      alert("Não conectado ao chat, mensagem vazia ou ID do bot inválido.");
+      addAlert("Não conectado ao chat, mensagem vazia ou ID do bot inválido.", 'warning');
       return;
     }
 
     const userMessageText = newMessage;
     // Adiciona a mensagem do usuário imediatamente com um flag "isSending"
     setMessages((prevMessages) => [...prevMessages, {
-      id: Date.now(), // ID temporário, será substituído pelo ID real do backend
+      id: Date.now(),
       botId: botIdNum,
       userMessage: userMessageText,
-      botResponse: "", // Vazio porque a resposta ainda não chegou
+      botResponse: "",
       timestamp: new Date().toISOString(),
       isUser: true,
-      isSending: true // Indica que esta mensagem está aguardando resposta do bot
+      isSending: true
     }]);
     setNewMessage('');
 
     try {
       await connection.invoke("SendMessageToBot", botIdNum, userMessageText);
     } catch (err: any) {
-      console.error("Erro ao enviar mensagem via SignalR:", err);
-      alert(`Falha ao enviar mensagem: ${err.message}`);
+      addAlert(`Falha ao enviar mensagem: ${err.message}`, 'error');
       setMessages((prevMessages) => prevMessages.filter(msg => !(msg.isUser && msg.userMessage === userMessageText && msg.isSending)));
     }
   };
@@ -180,7 +168,6 @@ function chatWindow() {
       </div>
       <div className="max-w-4xl m-auto w-full flex flex-col font-normal px-8 pb-8 pt-2 h-[calc(100vh-80px)]">
         <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-custom scroll-smooth">
-          {/* Renderiza mensagens individuais */}
           {messages.map((message) => {
             if (message.isUser) {
               return (
@@ -193,7 +180,6 @@ function chatWindow() {
                       </span>
                     </div>
                   </div>
-                  {/* Verifica se deve mostrar o loading spinner */}
                   {message.isSending && (
                     <div className="w-full flex flex-col items-stretch mt-2">
                       <hr className="border-base-content/20 mb-2" />
@@ -239,7 +225,7 @@ function chatWindow() {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Digite sua mensagem..."
-              disabled={connectionStatus !== 'Conectado'}
+              disabled={!isConnected}
               className="w-full pr-10 pl-4 py-2 bg-transparent text-base-content border border-base-content/20 rounded-full focus:outline-none focus:ring-2 focus:ring-primary placeholder-base-content/40"
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 pointer-events-none">
@@ -248,7 +234,7 @@ function chatWindow() {
           </div>
           <button
             type="submit"
-            disabled={connectionStatus !== 'Conectado' || !newMessage.trim()}
+            disabled={!isConnected || !newMessage.trim()}
             className="ml-2 bg-gradient-to-r from-primary to-secondary hover:scale-105 text-primary-content font-bold py-2 px-3 rounded-full transition duration-200 text-sm"
           >
             Enviar
